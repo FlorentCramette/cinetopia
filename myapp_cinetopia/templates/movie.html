@@ -1,53 +1,225 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <title>Recherche de film</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Recherche de films - Cinetopia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cinetopia-unified.css' %}">
     <style>
-        body {
-            font-family: "Poppins", sans-serif;
-            font-weight: 400;
-            font-style: normal;
-            background-image: url('/static/images/background.jpg');
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            position: relative;
-        }
-        .search-container {
-            background-image: url('/static/images/185179.png');
-            background-size: cover;
-            padding: 20px;
-            position: absolute;
-            margin: 10px 0;
-            bottom: 15%;
-            right: 10%;
-            height: 350px;
-            width: 380px;
-            border-radius: 20px;
-            color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        .search-section {
+            max-width: 600px;
+            margin: 50px auto;
             text-align: center;
         }
+        
+        .search-form {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--glass-border);
+        }
+        
         .search-input {
-            width: 80%;
-            padding: 10px;
-            border-radius: 5px;
+            width: 100%;
+            padding: 20px 25px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            color: var(--text-primary);
+            font-size: 1.1em;
+            transition: var(--transition-smooth);
+            margin-bottom: 20px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: var(--text-white);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(44, 62, 80, 0.6);
+        }
+        
+        .voice-search {
+            background: var(--accent-color);
+            color: var(--text-white);
             border: none;
-        }
-        .mic-button {
-            display: inline-block;
-            background-color: #D3D3D3;
-            margin: 10px 0;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5em;
             cursor: pointer;
-            font-size: 2em;
+            transition: var(--transition-smooth);
+            margin: 0 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        .submit-button {
+        
+        .voice-search:hover {
+            transform: scale(1.1);
+            background: #e55a2b;
+        }
+        
+        .trending-section {
+            margin-top: 60px;
+        }
+        
+        .trending-movies {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .trending-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-glass);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+        }
+        
+        .trending-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .example-searches {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .example-tag {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: var(--blur-bg);
+            color: var(--text-white);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--glass-border);
+        }
+        
+        .example-tag:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header unifié -->
+    <div class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🎬 Cinetopia</a>
+            <div class="user-info">
+                <span>Bonjour, {{ user.username }}</span>
+                <a href="/?logout=1" class="btn btn-glass">Déconnexion</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <h1 class="page-title">🔍 Recherche de Films</h1>
+        
+        <div class="search-section">
+            <div class="search-form">
+                <h2 style="color: var(--text-primary); margin-bottom: 20px; font-weight: 600;">
+                    Que souhaitez-vous regarder ?
+                </h2>
+                
+                <form method="post" action="{% url 'results' %}">
+                    {% csrf_token %}
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="text" 
+                               name="query" 
+                               class="search-input" 
+                               placeholder="Tapez un film, un genre, un acteur..." 
+                               required
+                               style="flex: 1;">
+                        <button type="button" class="voice-search" title="Recherche vocale">
+                            🎤
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 15px;">
+                        🎬 Découvrir des films similaires
+                    </button>
+                </form>
+                
+                <div class="example-searches">
+                    <span style="color: var(--text-primary); margin-right: 10px;">Exemples :</span>
+                    <span class="example-tag" onclick="document.querySelector('.search-input').value='Amélie'">Amélie</span>
+                    <span class="example-tag" onclick="document.querySelector('.search-input').value='comédie française'">Comédie française</span>
+                    <span class="example-tag" onclick="document.querySelector('.search-input').value='Marion Cotillard'">Marion Cotillard</span>
+                    <span class="example-tag" onclick="document.querySelector('.search-input').value='thriller'">Thriller</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="trending-section">
+            <h2 class="text-center text-white mb-30">🔥 Films populaires du moment</h2>
+            <div class="trending-movies">
+                <div class="trending-card" onclick="searchMovie('La Haine')">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🎭</div>
+                    <h3 style="color: var(--text-primary);">La Haine</h3>
+                    <p style="color: #666; font-size: 0.9em;">Drame social emblématique</p>
+                </div>
+                <div class="trending-card" onclick="searchMovie('Intouchables')">
+                    <div style="font-size: 2em; margin-bottom: 10px;">😊</div>
+                    <h3 style="color: var(--text-primary);">Intouchables</h3>
+                    <p style="color: #666; font-size: 0.9em;">Comédie dramatique</p>
+                </div>
+                <div class="trending-card" onclick="searchMovie('Le Dîner de Cons')">
+                    <div style="font-size: 2em; margin-bottom: 10px;">😂</div>
+                    <h3 style="color: var(--text-primary);">Le Dîner de Cons</h3>
+                    <p style="color: #666; font-size: 0.9em;">Comédie classique</p>
+                </div>
+                <div class="trending-card" onclick="searchMovie('Taxi')">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🚗</div>
+                    <h3 style="color: var(--text-primary);">Taxi</h3>
+                    <p style="color: #666; font-size: 0.9em;">Action marseillaise</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function searchMovie(title) {
+            document.querySelector('.search-input').value = title;
+            document.querySelector('form').submit();
+        }
+        
+        // Recherche vocale (basique)
+        document.querySelector('.voice-search').addEventListener('click', function() {
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'fr-FR';
+                recognition.onresult = function(event) {
+                    document.querySelector('.search-input').value = event.results[0][0].transcript;
+                };
+                recognition.start();
+            } else {
+                alert('Recherche vocale non supportée par votre navigateur');
+            }
+        });
+    </script>
+</body>
+</html>
             font-size: 1.5em; /* Rend le texte du bouton plus grand */
             padding: 10px; /* Ajoute de l'espace autour du texte */
         }

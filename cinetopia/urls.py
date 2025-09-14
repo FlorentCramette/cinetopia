@@ -19,6 +19,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from myapp_cinetopia import views
+from myapp_cinetopia.weather_api import weather_api
+from myapp_cinetopia.search_api import search_autocomplete, search_by_title, get_popular_searches
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,9 +31,18 @@ urlpatterns = [
     path('movie/', views.movie_view, name='movie'),
     path('results/', views.results_view, name='results'),
     path('recommend/', views.recommend_view, name='recommend'),
+    
+    # APIs
+    path('api/weather/', weather_api, name='weather_api'),
+    path('api/search/autocomplete/', search_autocomplete, name='search_autocomplete'),
+    path('api/search/title/', search_by_title, name='search_by_title'),
+    path('api/search/popular/', get_popular_searches, name='popular_searches'),
+    
+    # Test
+    path('test-background/', views.test_background, name='test_background'),
 ]
 
 # Servir les fichiers statiques et media en développement
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

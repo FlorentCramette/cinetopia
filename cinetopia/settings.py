@@ -122,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'myapp_cinetopia' / 'static',
 ]
@@ -178,3 +179,22 @@ LOGGING = {
         },
     },
 }
+
+# Configuration d'authentification
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# Configuration CSRF pour le développement
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = [
+        'http://127.0.0.1:8008',
+        'http://localhost:8008',
+        'http://127.0.0.1:8007',
+        'http://localhost:8007',
+        'http://127.0.0.1:8005',
+        'http://127.0.0.1:8006',
+    ]
+    # Cookies plus permissifs en développement
+    CSRF_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SAMESITE = 'Lax'

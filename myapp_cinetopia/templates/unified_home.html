@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Cinetopia - Votre cinéma français</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/cinetopia-unified.css' %}">
+    <style>
+        /* Styles spécifiques à la page d'accueil unifiée */
+        .auth-section {
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{% static "images/background.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            color: #ff6b35;
+            font-size: 2em;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        
+        .user-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .weather-widget {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .weather-icon {
+            width: 30px;
+            height: 30px;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .hero-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .hero-title {
+            font-size: 3.5em;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Authentification pour utilisateurs non connectés */
+        .auth-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .auth-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        .auth-toggle button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-toggle button.active {
+            background: #ff6b35;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+        }
+        
+        .auth-forms {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .auth-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            min-width: 350px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .auth-form.hidden {
+            display: none;
+        }
+        
+        .auth-form h3 {
+            color: #ff6b35;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+        }
+        
+        /* Section contenu pour utilisateurs connectés */
+        .content-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .content-card h3 {
+            color: #ff6b35;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+        
+        .btn-search {
+            background: #ff6b35;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .stat-item {
+            color: white;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+        
+        .messages {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+        
+        .message {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .message.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .message.success {
+            border-left-color: #27ae60;
+        }
+        
+        @media (max-width: 768px) {
+            .content-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .auth-forms {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero-title {
+                font-size: 2.5em;
+            }
+        }
+        
+        .location-status {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        /* Styles Netflix-like pour la recherche */
+        .netflix-search-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .netflix-search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .netflix-input {
+            flex: 1;
+            padding: 20px 25px;
+            font-size: 1.2em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .netflix-search-btn {
+            padding: 20px 25px;
+            font-size: 1.2em;
+            border: 2px solid #ff6b35;
+            border-radius: 15px;
+            background: #ff6b35;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+            min-width: 60px;
+        }
+        
+        .netflix-search-btn:hover {
+            background: #e55a30;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.4);
+        }
+        
+        .netflix-input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            background: white;
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 70px; /* Laisse de la place pour le bouton */
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            margin-top: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .suggestion-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .suggestion-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .suggestion-poster {
+            width: 40px;
+            height: 60px;
+            border-radius: 5px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .suggestion-info {
+            flex: 1;
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .suggestion-details {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .suggestion-match {
+            background: #ff6b35;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        
+        .search-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .search-option {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .search-option:hover {
+            background: #ff6b35;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+        }
+        
+        .popular-movies-section {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .popular-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .popular-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .popular-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .popular-genre {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+        }
+        
+        .popular-rating {
+            background: #ff6b35;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            display: inline-block;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header avec météo géolocalisée -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">🎬 Cinetopia</a>
+            
+            <div class="user-info">
+                <!-- Widget météo géolocalisé -->
+                <div class="weather-widget" id="weather-widget">
+                    <div class="weather-info">
+                        <span id="weather-temp">📍 Localisation...</span>
+                        <div class="location-status" id="location-status">Géolocalisation en cours...</div>
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <span>Bonjour, {{ user.username }}!</span>
+                    <a href="{% url 'login' %}?logout=1" style="color: #ff6b35; text-decoration: none;">Déconnexion</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages Flash -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Contenu principal -->
+    <main class="main-container">
+        <!-- Section Hero -->
+        <section class="hero-section">
+            <h1 class="hero-title">Cinetopia</h1>
+            <p class="hero-subtitle">Découvrez le meilleur du cinéma français avec des recommandations intelligentes</p>
+            
+            {% if user.is_authenticated %}
+                <!-- Recherche Netflix-like pour utilisateurs connectés -->
+                <div class="netflix-search-container" style="margin-bottom: 30px;">
+                    <h3 style="color: #ff6b35; font-size: 1.8em; margin-bottom: 20px; text-align: center;">
+                        🎬 Que souhaitez-vous regarder ?
+                    </h3>
+                    
+                    <div class="netflix-search-box">
+                        <input type="text" 
+                               id="netflix-search-input" 
+                               class="netflix-input" 
+                               placeholder="Quel film avez-vous aimé ?"
+                               autocomplete="off">
+                        <button type="button" id="search-button" class="netflix-search-btn" onclick="performSearch()">
+                            🔍
+                        </button>
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                    
+                    <div class="search-options">
+                        <button type="button" class="search-option" onclick="searchByCategory('comédie française')">
+                            😂 Comédies françaises
+                        </button>
+                        <button type="button" class="search-option" onclick="searchByCategory('thriller')">
+                            🕵️ Thrillers
+                        </button>
+                        <button type="button" class="search-option" onclick="searchByCategory('action')">
+                            💥 Films d'action
+                        </button>
+                        <button type="button" class="search-option" onclick="getTrendingMovies()">
+                            🔥 Tendances
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Statistiques -->
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">9,543</div>
+                    <div>Films français</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">ML</div>
+                    <div>Recommandations IA</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">🌍</div>
+                    <div>Météo géolocalisée</div>
+                </div>
+            </div>
+        </section>
+
+        {% if not user.is_authenticated %}
+            <!-- Section Authentification pour utilisateurs non connectés -->
+            <section class="auth-section">
+                <div class="auth-toggle">
+                    <button class="auth-btn active" onclick="showForm('login')">Connexion</button>
+                    <button class="auth-btn" onclick="showForm('signup')">Inscription</button>
+                </div>
+
+                <div class="auth-forms">
+                    <!-- Formulaire de connexion -->
+                    <div class="auth-form" id="login-form">
+                        <h3>🔐 Connexion</h3>
+                        <form method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="login">
+                            
+                            <div class="form-group">
+                                <label for="username">Nom d'utilisateur</label>
+                                <input type="text" id="username" name="username" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Mot de passe</label>
+                                <input type="password" id="password" name="password" required>
+                            </div>
+                            
+                            <button type="submit" class="btn-submit">Se connecter</button>
+                        </form>
+                    </div>
+
+                    <!-- Formulaire d'inscription -->
+                    <div class="auth-form hidden" id="signup-form">
+                        <h3>📝 Inscription</h3>
+                        <form method="post" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="signup">
+                            
+                            <div class="form-group">
+                                <label for="signup_username">Nom d'utilisateur</label>
+                                <input type="text" id="signup_username" name="username" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="signup_email">Email</label>
+                                <input type="email" id="signup_email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="signup_password1">Mot de passe</label>
+                                <input type="password" id="signup_password1" name="password1" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="signup_password2">Confirmer le mot de passe</label>
+                                <input type="password" id="signup_password2" name="password2" required>
+                            </div>
+                            
+                            <button type="submit" class="btn-submit">S'inscrire</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        {% else %}
+            <!-- Section contenu pour utilisateurs connectés -->
+            
+        {% endif %}
+    </main>
+
+    <script>
+        // Gestion de l'authentification
+        function showForm(formType) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const buttons = document.querySelectorAll('.auth-btn');
+            
+            // Reset tous les boutons
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (formType === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                event.target.classList.add('active');
+            } else {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                event.target.classList.add('active');
+            }
+        }
+
+        // Géolocalisation et météo
+        function initWeather() {
+            const weatherWidget = document.getElementById('weather-widget');
+            const weatherTemp = document.getElementById('weather-temp');
+            const locationStatus = document.getElementById('location-status');
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        locationStatus.textContent = 'Récupération météo...';
+                        
+                        // Appel à votre API météo avec les coordonnées
+                        fetch('/api/weather/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            },
+                            body: JSON.stringify({
+                                lat: lat,
+                                lon: lon
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                weatherTemp.innerHTML = `🌡️ ${data.temp}°C • ${data.condition}`;
+                                locationStatus.textContent = `📍 ${data.location}`;
+                            } else {
+                                showFallbackWeather();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur météo:', error);
+                            showFallbackWeather();
+                        });
+                    },
+                    function(error) {
+                        console.log('Géolocalisation refusée ou non disponible, utilisation de la géolocalisation IP...');
+                        // Au lieu d'afficher Limoges, utilise la géolocalisation IP
+                        showFallbackWeather();
+                    }
+                );
+            } else {
+                showFallbackWeather();
+            }
+        }
+
+        function showFallbackWeather() {
+            const weatherTemp = document.getElementById('weather-temp');
+            const locationStatus = document.getElementById('location-status');
+            
+            // Utilise l'API météo avec géolocalisation IP au lieu d'afficher Limoges en dur
+            fetch('/api/weather/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    weatherTemp.innerHTML = `🌡️ ${data.temp}°C • ${data.condition}`;
+                    locationStatus.textContent = `📍 ${data.location}, ${data.country}`;
+                } else {
+                    // Vraiment en dernier recours
+                    weatherTemp.innerHTML = '🌡️ 18°C • Partiellement nuageux';
+                    locationStatus.textContent = '📍 Localisation non disponible';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur API météo fallback:', error);
+                weatherTemp.innerHTML = '🌡️ 18°C • Partiellement nuageux';
+                locationStatus.textContent = '📍 Localisation non disponible';
+            });
+        }
+
+        // Auto-hide messages après 5 secondes
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateX(100%)';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 5000);
+
+        // ========== RECHERCHE NETFLIX-LIKE ==========
+        let searchTimeout;
+        const searchInput = document.getElementById('netflix-search-input');
+        const suggestionsContainer = document.getElementById('search-suggestions');
+
+        // Recherche en temps réel
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    hideSuggestions();
+                    return;
+                }
+                
+                searchTimeout = setTimeout(() => {
+                    fetchSuggestions(query);
+                }, 300); // Délai de 300ms pour éviter trop d'appels
+            });
+            
+            // Masquer suggestions en cliquant ailleurs
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.netflix-search-box')) {
+                    hideSuggestions();
+                }
+            });
+            
+            // Navigation au clavier
+            searchInput.addEventListener('keydown', function(e) {
+                const suggestions = document.querySelectorAll('.suggestion-item');
+                const activeSuggestion = document.querySelector('.suggestion-item.active');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (activeSuggestion) {
+                        activeSuggestion.classList.remove('active');
+                        const next = activeSuggestion.nextElementSibling;
+                        if (next) next.classList.add('active');
+                    } else if (suggestions.length > 0) {
+                        suggestions[0].classList.add('active');
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (activeSuggestion) {
+                        activeSuggestion.classList.remove('active');
+                        const prev = activeSuggestion.previousElementSibling;
+                        if (prev) prev.classList.add('active');
+                    }
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (activeSuggestion) {
+                        selectSuggestion(activeSuggestion);
+                    } else {
+                        performSearch(); // Utilise la même méthode que le bouton
+                    }
+                }
+            });
+        }
+
+        async function fetchSuggestions(query) {
+            try {
+                const response = await fetch(`/api/search/autocomplete/?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (data.success && data.suggestions.length > 0) {
+                    displaySuggestions(data.suggestions);
+                } else {
+                    hideSuggestions();
+                }
+            } catch (error) {
+                console.error('Erreur recherche:', error);
+                hideSuggestions();
+            }
+        }
+
+        function displaySuggestions(suggestions) {
+            suggestionsContainer.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.suggestionData = suggestion; // Stocke les données pour navigation clavier
+                item.innerHTML = `
+                    <img src="${suggestion.poster || 'https://via.placeholder.com/40x60/667eea/white?text=🎬'}" 
+                         alt="${suggestion.title}" 
+                         class="suggestion-poster"
+                         onerror="this.src='https://via.placeholder.com/40x60/667eea/white?text=🎬'">
+                    <div class="suggestion-info">
+                        <div class="suggestion-title">${suggestion.title}</div>
+                        <div class="suggestion-details">
+                            ${suggestion.year} • ${suggestion.genre} • ${suggestion.director}
+                            <span class="suggestion-match">Match ${suggestion.match_type}</span>
+                        </div>
+                    </div>
+                `;
+                
+                item.addEventListener('click', () => selectSuggestion(item, suggestion));
+                suggestionsContainer.appendChild(item);
+            });
+            
+            suggestionsContainer.style.display = 'block';
+        }
+
+        function selectSuggestion(element, suggestion = null) {
+            if (suggestion) {
+                // Recherche de films similaires basée sur ce film (comme le bouton recherche)
+                window.location.href = `/results/?movie_id=${suggestion.id}`;
+            } else {
+                // Extraction des données depuis l'élément DOM (pour navigation clavier)
+                const suggestionData = element.suggestionData;
+                if (suggestionData) {
+                    window.location.href = `/results/?movie_id=${suggestionData.id}`;
+                } else {
+                    // Fallback : utilise le titre pour recherche exacte
+                    const title = element.querySelector('.suggestion-title').textContent;
+                    performSearchByTitle(title);
+                }
+            }
+        }
+
+        function hideSuggestions() {
+            suggestionsContainer.style.display = 'none';
+        }
+
+        // Fonctions de recherche par catégorie
+        function searchByCategory(category) {
+            window.location.href = `/results/?q=${encodeURIComponent(category)}`;
+        }
+        
+        function performSearchByTitle(title) {
+            // Recherche exacte par titre de film (comme performSearch)
+            fetch(`/api/search/title/?title=${encodeURIComponent(title)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.movie) {
+                        // Film trouvé : rediriger vers les recommandations ML pour ce film
+                        window.location.href = `/results/?movie_id=${data.movie.id}`;
+                    } else {
+                        // Film non trouvé : recherche textuelle en fallback
+                        window.location.href = `/results/?q=${encodeURIComponent(title)}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur de recherche:', error);
+                    // En cas d'erreur, fallback vers recherche textuelle
+                    window.location.href = `/results/?q=${encodeURIComponent(title)}`;
+                });
+        }
+        
+        function performSearch() {
+            const searchInput = document.getElementById('netflix-search-input');
+            const query = searchInput.value.trim();
+            
+            if (query) {
+                // Recherche exacte par titre de film
+                fetch(`/api/search/title/?title=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.movie) {
+                            // Film trouvé : rediriger vers les recommandations ML pour ce film
+                            window.location.href = `/results/?movie_id=${data.movie.id}`;
+                        } else {
+                            // Film non trouvé : afficher un message d'erreur
+                            alert(`Film "${query}" non trouvé. Veuillez vérifier l'orthographe.`);
+                            searchInput.focus();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur de recherche:', error);
+                        alert('Erreur lors de la recherche. Veuillez réessayer.');
+                    });
+            } else {
+                alert('Veuillez saisir un terme de recherche');
+                searchInput.focus();
+            }
+        }
+
+        function getTrendingMovies() {
+            window.location.href = '/results/';
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initWeather();
+        });
+    </script>
+</body>
+</html>
