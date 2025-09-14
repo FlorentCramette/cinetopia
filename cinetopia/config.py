@@ -7,6 +7,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 # Database
+DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.mysql')
 DB_NAME = os.getenv('DB_NAME', 'projt_commun')
 DB_USER = os.getenv('DB_USER', 'root')
 DB_PASSWORD = os.getenv('DB_PASSWORD')

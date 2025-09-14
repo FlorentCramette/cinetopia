@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 import logging
 
 from .forms import LoginForm, SignUpForm, MovieRecommendationForm
-from .services import movie_service, weather_service
+from .services import movie_recommendation_service, weather_service
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ def results_view(request):
         return redirect('movie')
     
     try:
-        recommended_movies, movie_info = movie_service.recommend_movies(movie_name)
+        recommended_movies, movie_info = movie_recommendation_service.recommend_movies(movie_name)
         
         if recommended_movies is None:
             messages.error(request, movie_info)  # movie_info contient le message d'erreur
@@ -124,7 +124,7 @@ def recommend_view(request):
             movie_name = form.cleaned_data['movie_name']
             
             try:
-                recommended_movies, movie_info = movie_service.recommend_movies(movie_name)
+                recommended_movies, movie_info = movie_recommendation_service.recommend_movies(movie_name)
                 
                 if recommended_movies is None:
                     return JsonResponse({

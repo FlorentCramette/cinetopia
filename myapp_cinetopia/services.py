@@ -208,10 +208,10 @@ class WeatherService:
 
 # Instances globales pour éviter de recharger les données
 try:
-    movie_service = MovieRecommendationService()
+    movie_recommendation_service = MovieRecommendationService()
     weather_service = WeatherService()
 except Exception as e:
     logger.error(f"Erreur lors de l'initialisation des services: {e}")
     # Créer des services de fallback
-    movie_service = None
+    movie_recommendation_service = None
     weather_service = WeatherService()
