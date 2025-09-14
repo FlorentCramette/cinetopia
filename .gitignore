@@ -173,7 +173,10 @@ staticfiles/
 
 # Project specific
 debug.log
-*.bat
+# Uncomment the next lines if you don't want to include launchers
+# *.bat
+# start_cinetopia.py
+# start_cinetopia.ps1
 *.lnk
 
 # Temporary files
