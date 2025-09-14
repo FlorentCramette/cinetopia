@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Connexion</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            background-image: url('/static/images/background.jpg');
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .login-container {
+            background-image: url('/static/images/185179.png');
+            background-size: cover;
+            padding: 20px;
+            position: absolute;
+            bottom: 10%;
+            right: 10%;
+            height: 350px;
+            width: 380px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .welcome-message {
+            position: absolute;
+            bottom: 10px;
+            right: 30px;
+            color: white;
+            font-size: 3em;
+        }
+        .submit-button {
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            background-color: white;
+            color: black;
+        }
+        /* Styles pour les écrans de taille moyenne */
+        @media (max-width: 768px) {
+            .login-container {
+                width: 80%;
+                height: auto;
+                bottom: 5%;
+                right: 5%;
+            }
+            .welcome-message {
+                font-size: 2em;
+            }
+        }
+        /* Styles pour les petits écrans */
+        @media (max-width: 480px) {
+            .login-container {
+                width: 90%;
+                bottom: 2%;
+                right: 2%;
+            }
+            .welcome-message {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+     <div class="login-container" style="bottom: 20%;"> <!-- Ici, j'ai augmenté la valeur de 'bottom' -->
+        <h1>Connectez-vous</h1>
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <form action="/login/" method="post">
+            {% csrf_token %}
+            <label for="username">Nom d'utilisateur :</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Mot de passe :</label><br>
+            <input type="password" id="password" name="password"><br>
+            <input class="submit-button" type="submit" value="Se connecter">
+        </form>
+        <p>Vous n'avez pas de compte ?</p>
+        <!-- <p><a href="/signup/">Créez un compte</a></p> -->
+    </div>
+    <div class="welcome-message" style="bottom: 100px;"> <!-- Ici, j'ai augmenté la valeur de 'bottom' -->
+        Bienvenue sur Cinétopia Streaming
+    </div>
+</body>
+</html>

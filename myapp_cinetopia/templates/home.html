@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Accueil</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-image: url('/static/images/background.jpg');
+            background-size: cover;  /* Ajustez la taille de l'image pour qu'elle couvre tout le conteneur */
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .welcome-text {
+            background-color: transparent; /* Ici, j'ai rendu le fond des éléments de texte transparents */
+            font-size: 25px;
+            font-weight: 25px;
+            width: 100%;
+            color: black;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .weather {
+            background-color: transparent; /* Ici, j'ai rendu le fond des éléments de texte transparents */
+            color: black;
+            padding: 10px;
+            margin: 10px;
+            width: 100%;
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 10px;
+            
+        }
+        .sun {
+        position: absolute;
+        top: 50%;
+        right: -50px;
+        width: 100px;
+        height: 100px;
+        }
+        .cloud {
+        position: absolute;
+        top: 50%;
+        left: -50px;
+        width: 100px;
+        height: 100px;
+         }
+        .weather div {
+            margin-top: 20px;
+            background-color: transparent; /* Ici, j'ai rendu le fond des éléments de texte transparents */
+        }
+        .button {
+            background: #0147AB;
+            border: none;
+            width: 210px;
+            height: 110px;
+            text-align: center;
+            line-height: 50px;
+            display: inline-block;
+            font-size: 20px;
+            margin: 4px 2px;
+            cursor: pointer;
+            color: white;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+            
+        }
+        .button:hover {
+            background: #555;
+        }
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 20px;
+                background-color: rgba(255, 255, 255, 0.5);
+            }
+            .button {
+                width: 150px;
+                height: 140px;
+                line-height: 140px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-text">
+            <h1>Bonjour, {{ user.username }} !</h1>
+            <p>
+                Bienvenue sur le site de streaming de Cinétopia.<br>
+                Ce site te permettra de retrouver tes films préférés et d'en découvrir de nouveaux, qui ne manqueront pas de te plaire!<br>
+                Alors bon visionnage!!<br>
+                <br>
+                Et surtout, s'il pleut viens nous voir au Cinétopia!
+            </p>
+        </div>
+        <div class="weather">
+            <div>
+                <h2>Météo à {{ weather_data.location.name }}</h2>
+                {% for day in weather_data.forecast.forecastday %}
+                    <h3>{{ day.date }}</h3>
+                    <p>Température maximale : {{ day.day.maxtemp_c }}°C</p>
+                    <p>Température minimale : {{ day.day.mintemp_c }}°C</p>
+                    <p>{{ day.day.condition.text }}</p>
+                {% endfor %}
+                <!-- Ajoutez ce bouton pour aller à la page de recommandation de films -->
+                <a href="{% url 'movie' %}" class="button">Recommandations de films</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

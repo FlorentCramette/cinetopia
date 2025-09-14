@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Recherche de film</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            background-image: url('/static/images/background.jpg');
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .search-container {
+            background-image: url('/static/images/185179.png');
+            background-size: cover;
+            padding: 20px;
+            position: absolute;
+            margin: 10px 0;
+            bottom: 15%;
+            right: 10%;
+            height: 350px;
+            width: 380px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .search-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+        .mic-button {
+            display: inline-block;
+            background-color: #D3D3D3;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 2em;
+        }
+        .submit-button {
+            font-size: 1.5em; /* Rend le texte du bouton plus grand */
+            padding: 10px; /* Ajoute de l'espace autour du texte */
+        }
+        @media (max-width: 768px) {
+            .search-container {
+                width: 80%;
+                height: auto;
+                bottom: 5%;
+                right: 5%;
+            }
+            .search-input, .mic-button {
+                width: 70%;
+            }
+        }
+        @media (max-width: 480px) {
+            .search-container {
+                width: 90%;
+                bottom: 2%;
+                right: 2%;
+            }
+            .search-input, .mic-button {
+                width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+         <h1 style="margin-top: 70px;">Recherchez un film</h1>
+        <form action="{% url 'recommend' %}" method="post" style="margin-top: 30px;">
+            {% csrf_token %}
+            <input type="text" id="search" name="movie_name" class="search-input">
+            <button type="button" id="mic" class="mic-button">🎤</button>
+            <br>
+            <input type="submit" value="Allez hop, à Créteil!" class="submit-button"> <!-- Nouveau bouton de soumission -->
+        </form>
+    </div>
+    <script>
+        const searchInput = document.getElementById('search');
+        const micButton = document.getElementById('mic');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        recognition.onstart = function() {
+            console.log('La reconnaissance vocale est activée.');
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            searchInput.value = transcript;
+        };
+
+        micButton.addEventListener('click', function() {
+            recognition.start();
+        });
+    </script>
+</body>
+</html>

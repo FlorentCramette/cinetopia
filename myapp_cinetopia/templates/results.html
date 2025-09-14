@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <title>Résultats de la recherche</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-image: url('/static/images/background.jpg');
+            background-size: cover;
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .result-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 50px;
+            width: 80%;
+        }
+        .result-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            margin: 20px;
+            padding: 20px;
+            width: 20%;
+        }
+        .result-card img {
+            border-radius: 10px;
+            height: auto;
+            object-fit: contain;
+            width: 100%;
+        }
+        .result-card h2, .result-card p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-top: 10px;
+            color: #333;
+        }
+        .result-card h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .synopsis {
+            height: 100px;
+            overflow-y: scroll;
+        }
+        .info {  /* Nouvelle classe pour le genre et le réalisateur */
+            font-size: 20px;  /* Augmenter la taille de la police */
+            color: #000;  /* Changer la couleur du texte */
+            font-weight: bold;  /* Rendre le texte en gras */
+        }
+        #search-results {
+        color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="search-results">Résultats de la recherche pour "{{ movie_info.Nom }}"</h1>
+    <div class="result-container">
+        {% for movie in recommended_movies %}
+            <div class="result-card">
+                <img src="{{ movie.Lien_de_l_affiche }}" alt="{{ movie.Titre }}">
+                <h2>{{ movie.Nom }}</h2>
+                <p class="info"><strong>Réalisé par :</strong> {{ movie.Nom_du_réalisateur }}</p>
+                <p><strong>Acteurs :</strong> {{ movie.Noms_de_tous_les_acteurs }}</p>
+                <div class="synopsis">
+                    <p>{{ movie.Synopsis }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
