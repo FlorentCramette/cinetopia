@@ -91,9 +91,26 @@ def setup_env_file():
             return False
     return True
 
+def check_uv():
+    """Vérifie si uv est installé, sinon l'installe."""
+    success, _ = run_command("uv --version", capture_output=True)
+    if success:
+        print_status("uv détecté - utilisation pour l'installation rapide", "SUCCESS")
+        return True
+    else:
+        print_status("Installation d'uv pour des installations plus rapides...", "INFO")
+        success, _ = run_command("pip install uv")
+        if success:
+            print_status("uv installé avec succès", "SUCCESS")
+            return True
+        else:
+            print_status("Échec de l'installation d'uv, utilisation de pip classique", "WARNING")
+            return False
+
 def setup_virtual_env():
-    """Configure l'environnement virtuel."""
+    """Configure l'environnement virtuel avec uv."""
     venv_path = Path("venv")
+    use_uv = check_uv()
     
     if platform.system() == "Windows":
         activate_script = venv_path / "Scripts" / "activate.bat"
@@ -104,17 +121,50 @@ def setup_virtual_env():
     
     if not python_exe.exists():
         print_status("Création de l'environnement virtuel...", "INFO")
-        success, _ = run_command("python -m venv venv")
+        if use_uv:
+            success, _ = run_command("uv venv venv")
+        else:
+            success, _ = run_command("python -m venv venv")
+        
         if not success:
             print_status("Erreur lors de la création de l'environnement virtuel", "ERROR")
             return False
         
-        print_status("Installation des dépendances...", "INFO")
-        pip_cmd = f"{python_exe} -m pip install -r requirements.txt"
-        success, _ = run_command(pip_cmd)
+        if use_uv:
+            print_status("Installation rapide des dépendances avec uv...", "INFO")
+            pip_cmd = f"uv pip install -r requirements.txt --python {python_exe}"
+            success, _ = run_command(pip_cmd)
+        else:
+            print_status("Mise à jour de pip, setuptools et wheel...", "INFO")
+            upgrade_cmd = f"{python_exe} -m pip install --upgrade pip setuptools wheel"
+            success, _ = run_command(upgrade_cmd)
+            
+            print_status("Installation des dépendances avec pip...", "INFO")
+            pip_cmd = f"{python_exe} -m pip install -r requirements.txt"
+            success, _ = run_command(pip_cmd)
+        
         if not success:
             print_status("Erreur lors de l'installation des dépendances", "ERROR")
-            return False
+            if use_uv:
+                print_status("Tentative avec pip classique...", "WARNING")
+                pip_cmd = f"{python_exe} -m pip install -r requirements.txt"
+                success, _ = run_command(pip_cmd)
+            
+            if not success:
+                print_status("Installation des packages essentiels uniquement...", "WARNING")
+                essential_packages = [
+                    "Django==5.0.6",
+                    "python-dotenv==1.0.0", 
+                    "requests==2.31.0"
+                ]
+                
+                for package in essential_packages:
+                    print_status(f"Installation de {package}...", "INFO")
+                    if use_uv:
+                        install_cmd = f"uv pip install {package} --python {python_exe}"
+                    else:
+                        install_cmd = f"{python_exe} -m pip install {package}"
+                    run_command(install_cmd)
     
     print_status("Environnement virtuel configuré", "SUCCESS")
     return str(python_exe)

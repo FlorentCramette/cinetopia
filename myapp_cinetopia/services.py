@@ -1,13 +1,20 @@
 import os
 from pathlib import Path
-import pandas as pd
-import re
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.neighbors import NearestNeighbors
 from django.conf import settings
 from cinetopia.config import WEATHER_API_KEY, WEATHER_API_HOST
 import requests
 import logging
+
+# Imports optionnels pour ML
+try:
+    import pandas as pd
+    import re
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.neighbors import NearestNeighbors
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    pd = None
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +27,22 @@ class MovieRecommendationService:
         self.knn = None
         self.vectorizer = None
         self.data_vectorized = None
-        self._load_data()
+        self.ml_available = ML_AVAILABLE
+        
+        if self.ml_available:
+            try:
+                self._load_data()
+            except Exception as e:
+                logger.error(f"Erreur lors du chargement des données ML: {e}")
+                self.ml_available = False
+        else:
+            logger.warning("Packages ML non disponibles - recommandations désactivées")
     
     def _load_data(self):
         """Charge et prépare les données de films."""
+        if not self.ml_available:
+            return
+            
         try:
             data_path = Path(settings.BASE_DIR) / 'myapp_cinetopia' / 'data' / 'french_movies_with_keywords.csv'
             df = pd.read_csv(data_path)
@@ -38,6 +57,7 @@ class MovieRecommendationService:
             
         except Exception as e:
             logger.error(f"Erreur lors du chargement des données: {e}")
+            self.ml_available = False
             raise
     
     def _preprocess_data(self):
@@ -77,6 +97,9 @@ class MovieRecommendationService:
     
     def recommend_movies(self, movie_name, n_neighbors=10):
         """Recommande des films similaires."""
+        if not self.ml_available:
+            return None, "Les recommandations ML ne sont pas disponibles. Veuillez installer pandas et scikit-learn."
+        
         movie_name_lower = movie_name.lower()
         self.data['Nom_lower'] = self.data['Nom'].str.lower()
         
@@ -184,5 +207,11 @@ class WeatherService:
 
 
 # Instances globales pour éviter de recharger les données
-movie_service = MovieRecommendationService()
-weather_service = WeatherService()
+try:
+    movie_service = MovieRecommendationService()
+    weather_service = WeatherService()
+except Exception as e:
+    logger.error(f"Erreur lors de l'initialisation des services: {e}")
+    # Créer des services de fallback
+    movie_service = None
+    weather_service = WeatherService()
